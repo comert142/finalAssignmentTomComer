@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 import java.util.TreeMap;
 /**
@@ -151,6 +152,17 @@ import java.util.TreeMap;
         distanceBetween = distanceTobusStop;
         return edgeTo;
     }
+//now implement a way to recall the id of the bus/stop by the user 
+    //superceding this I will write a path accquiring method which 
+    
+     public String getbusStopById(int id) {
+        for (busStop t : allbusStops) {
+            if (t.getIdentif() == id) {
+                return t.gettingTheName();
+            }
+        }
+        return "NO BUS STOP/INCORRECT BUS STOP";
+    }
 
 
  
@@ -182,6 +194,42 @@ import java.util.TreeMap;
                                                                adjL.get(from).add(new Edge(from, to, cost));
                                                }
    }
+      public String bringMeTheTripInfo(int firstbusStop, int nextbusStop) throws FileNotFoundException {
+        createEdges();
+
+        if (getbusStopById(firstbusStop) == null) {
+            return "The stop you are planning on leaving from, does not exist";
+        }
+        if (getbusStopById(nextbusStop) == null) {
+            return "The stop you are planning on going to, does not exist";
+        }
+
+        Edge[] edgeTo = dijkstra(firstbusStop);
+
+        ArrayList<String> sequence = new ArrayList<String>();
+
+        int currentbusStopbusStop = nextbusStop;
+
+        sequence.add(getbusStopById(nextbusStop));
+        do {
+            try {
+                currentbusStopbusStop = edgeTo[currentbusStopbusStop].from;
+            } catch (NullPointerException e) {
+                return "There is no path !";
+            }
+            sequence.add(getbusStopById(currentbusStopbusStop));
+        } while (currentbusStopbusStop != firstbusStop);
+        Collections.reverse(sequence);
+
+        sequence.add(0, distanceBetween[nextbusStop] + "");
+
+        String returnString = "";
+        for (String string : sequence) {
+            returnString += string + "\n";
+        }
+        return returnString;
+    }
+
                                                
                                                                
                                            
