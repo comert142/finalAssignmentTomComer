@@ -1,9 +1,11 @@
 
 package com.mycompany.finalassignmenttomcomer;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.TreeMap;
 /**
  *
  * @author tcome
@@ -17,6 +19,7 @@ import java.util.Scanner;
    ArrayList<busStop> allbusStops;
    String fileOfTransfers, timesOfbusStopsFile, justbusStopsFile;//file declaration
    double[] distanceBetween;
+   assembleGraph cityBusGraph;
    
    public BusPathAlgo(String fileOfTransfers, String timesOfbusStopsFile, String justbusStopsFile){
                this.fileOfTransfers = fileOfTransfers;
@@ -74,18 +77,140 @@ import java.util.Scanner;
             int cost = (type == 0) ? 2 : (Integer.parseInt(transferValues[3]) / 100);
 
             cityBusGraph.addEdge(from, to, cost);
+        }info.close();
+
+        info = new Scanner(stopTimes);
+        info.nextLine();
+
+        String journey;
+        String[] tripValue;
+        int from = 1;
+        int to, sequenceValue;
+        boolean skipEdge;
+
+        while (info.hasNextLine()) {
+            journey = info.nextLine();
+            tripValue = journey.split(",");
+            sequenceValue = Integer.parseInt(tripValue[4]);
+
+            skipEdge = false;
+
+            if (sequenceValue != 1) {
+                to = Integer.parseInt(tripValue[3]);
+                for (Edge ed : cityBusGraph.adj(from)) {
+                    if (ed.to == to) {
+                        skipEdge = true;
+                        break;
+                    }
+                }
+                if (!skipEdge) {
+                    cityBusGraph.addEdge(from, to, 1);
+                }
+            }
+
+            from = Integer.parseInt(tripValue[3]);
         }
-      }
+        info.close();
+    }
+          public void relax(double[] distanceTobusStop, Edge[] edgeTo, int v) {
+        for (Edge e : cityBusGraph.adj(v)) {
+            int w = e.to;
+            if (distanceTobusStop[w] > distanceTobusStop[v] + e.cost) {//relaxing edges between nodes if null
+                distanceTobusStop[w] = distanceTobusStop[v] + e.cost;
+                edgeTo[w] = e;
+            }
+        }
+private void pathWork() {//from my diijsktra last assignment which was with tree map 
+       
+       slwPath = Math.min(spA,  spB);
+       slwPath = Math.min(slwPath, spC);
+       
+       if (filename == null) {
+    	   slwPath = -1;
+       }
+       
+       cityMap = new TreeMap<>();
+       try {
+    	   Scanner scanner = new Scanner(new FileInputStream(filename));
+    	   	int V = scanner.nextInt();
+    	   	int S = scanner.nextInt();
+    	   	for(int i = 0; i < S; i++) {
+    	   		if (scanner.hasNext()) {
+    	   			int inter1 = scanner.nextInt();
+    	   			int inter2 = scanner.nextInt ();
+    	   			double dist = scanner.nextDouble();
+    	   			Node node1, node2;
+    	   			
+    	   			if (cityMap.get(inter1) == null) {
+    	   				node1 = new Node(inter1);
+    	   				cityMap.put(inter1, node1);
+    	   			}
+    	   			else {
+    	   				node1 = cityMap.get(inter1);
+    	   			}
+    	   			
+    	   			if (cityMap.get(inter2) == null) {
+    	   				node2 = new Node(inter2);
+    	   				cityMap.put(inter2, node2);
+    	   			}
+    	   			else {
+    	   				node2 = cityMap.get(inter2);
+    	   			}
+    	   			
+    	   			node1.addAdjacent(node2, dist);
+    	   		}
+    	   		else {
+    	   			break;
+    	   		}
+    	   	}
+    		  
+    	}
+    		  
+    	catch (Exception e) { slwPath = -1; }
+       
+    }
+    
+    private class Node {
+    	int id;
+    	double cost = Double.MAX_VALUE;
+    	ArrayList<Path> paths = new ArrayList<>();
+    	
+    	Node(int id) {
+    		this.id = id;
+    	}
+    	
+    	void addAdjacent(Node node, double cost) {
+    		paths.add(new Path(node, cost));
+    	}
+    }
+    
+    private class Path {
+    	Node meetingPlace;
+    	double cost;
+    	
+    	Path(Node meetingPlace, double cost) {
+    		this.meetingPlace = meetingPlace;
+    		this.cost = cost;
+    	}
+    }
+    
+          }
+  
+    }
+
+ 
+
+                                                           
+  
 
 
 
-                                  
 
+             
+         
 
-
-
-
-
+            
+         
 
               
    class assembleGraph {//would much prefer to put in a multi map TODO THIS LATER !
@@ -100,21 +225,13 @@ import java.util.Scanner;
                                                }
                                                void addEdge(int from, int to, int cost) {
                                                                adjL.get(from).add(new Edge(from, to, cost));
-                                                               
                                                }
    }
+                                               
+                                                               
+                                           
 
 
-
-                           
-                       }
-
-//simple iteration
-
-                       }
-
-//array in array initialising 
-               
 
    
   
@@ -125,7 +242,7 @@ import java.util.Scanner;
 
 
        
-   }
+   
        class busStop {//declaring variables and fetching in these next few 
 
         int id;
@@ -141,6 +258,10 @@ import java.util.Scanner;
                   public int getIdentif() {
             return id;
         }
+}
+ }
+
+       
 
        
        
@@ -152,7 +273,7 @@ import java.util.Scanner;
 
 
                     
-                }
+                
 
                        
 
@@ -171,7 +292,7 @@ import java.util.Scanner;
 
 
        
-   }
+   
    
    
  
