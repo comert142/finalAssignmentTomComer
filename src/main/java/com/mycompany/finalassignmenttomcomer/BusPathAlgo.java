@@ -120,83 +120,38 @@ import java.util.TreeMap;
                 edgeTo[w] = e;
             }
         }
-private void pathWork() {//from my diijsktra last assignment which was with tree map 
-       
-       slwPath = Math.min(spA,  spB);
-       slwPath = Math.min(slwPath, spC);
-       
-       if (filename == null) {
-    	   slwPath = -1;
-       }
-       
-       cityMap = new TreeMap<>();
-       try {
-    	   Scanner scanner = new Scanner(new FileInputStream(filename));
-    	   	int V = scanner.nextInt();
-    	   	int S = scanner.nextInt();
-    	   	for(int i = 0; i < S; i++) {
-    	   		if (scanner.hasNext()) {
-    	   			int inter1 = scanner.nextInt();
-    	   			int inter2 = scanner.nextInt ();
-    	   			double dist = scanner.nextDouble();
-    	   			Node node1, node2;
-    	   			
-    	   			if (cityMap.get(inter1) == null) {
-    	   				node1 = new Node(inter1);
-    	   				cityMap.put(inter1, node1);
-    	   			}
-    	   			else {
-    	   				node1 = cityMap.get(inter1);
-    	   			}
-    	   			
-    	   			if (cityMap.get(inter2) == null) {
-    	   				node2 = new Node(inter2);
-    	   				cityMap.put(inter2, node2);
-    	   			}
-    	   			else {
-    	   				node2 = cityMap.get(inter2);
-    	   			}
-    	   			
-    	   			node1.addAdjacent(node2, dist);
-    	   		}
-    	   		else {
-    	   			break;
-    	   		}
-    	   	}
-    		  
-    	}
-    		  
-    	catch (Exception e) { slwPath = -1; }
-       
-    }
-    
-    private class Node {
-    	int id;
-    	double cost = Double.MAX_VALUE;
-    	ArrayList<Path> paths = new ArrayList<>();
-    	
-    	Node(int id) {
-    		this.id = id;
-    	}
-    	
-    	void addAdjacent(Node node, double cost) {
-    		paths.add(new Path(node, cost));
-    	}
-    }
-    
-    private class Path {
-    	Node meetingPlace;
-    	double cost;
-    	
-    	Path(Node meetingPlace, double cost) {
-    		this.meetingPlace = meetingPlace;
-    		this.cost = cost;
-    	}
-    }
-    
           }
-  
+          
+      
+    public Edge[] dijkstra(int firstbusStop) {//couldnt do DFS 
+        double[] distanceTobusStop = new double[maxId];
+        boolean[] relaxed = new boolean[maxId];
+        Edge[] edgeTo = new Edge[maxId];
+
+        for (busStop stop : allbusStops) {
+            distanceTobusStop[stop.getIdentif()] = Double.POSITIVE_INFINITY;
+            relaxed[stop.getIdentif()] = false;
+            edgeTo[stop.getIdentif()] = null;
+        }
+        distanceTobusStop[firstbusStop] = 0;
+
+        int currentbusStop = firstbusStop;
+
+        for (int i = 0; i < allbusStops.size(); i++) {
+            relax(distanceTobusStop, edgeTo, currentbusStop);
+            relaxed[currentbusStop] = true;
+            double min = Double.POSITIVE_INFINITY;
+            for (busStop stop : allbusStops) {
+                if (distanceTobusStop[stop.getIdentif()] < min && !relaxed[stop.getIdentif()]) {
+                    min = distanceTobusStop[stop.getIdentif()];
+                    currentbusStop = stop.getIdentif();
+                }
+            }
+        }
+        distanceBetween = distanceTobusStop;
+        return edgeTo;
     }
+
 
  
 
